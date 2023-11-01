@@ -1,3 +1,4 @@
+// Selecionando elementos HTML usando seletores de atributos CSS
 const buttonElements = document.querySelectorAll('[data-num]');
 const operationButtons = document.querySelectorAll('[data-operation]');
 const currentVal = document.getElementById('current');
@@ -6,88 +7,100 @@ const clearButton = document.querySelector('.clear');
 const deleteButton = document.querySelector('.delete');
 const equalButtons = document.querySelector('.equal')
 
-let currentValueElements = '';
-let previousValueWlements = '';
-let operation = undefined;
-let equalButton_ = false;
+// Inicializa variáveis para armazenar o estado da calculadora
+let currentValueElements = '';       // Armazena o valor atual sendo inserido
+let previousValueWlements = '';     // Armazena o valor anterior e a operação
+let operation = undefined;           // Armazena a operação matemática atual
+let equalButton_ = false;           // Indica se o botão de igual foi pressionado
 
+// Event listener para os botões numéricos
 buttonElements.forEach((button) => {
   button.addEventListener('click', () => {
     if (equalButton_ === true) {
-      currentValueElements = '';
+      currentValueElements = '';       // Reinicia o valor atual após um cálculo
       equalButton_ = false;
       appendNumber(button.textContent); 
-    }else{
-      appendNumber(button.textContent); 
+    } else {
+      appendNumber(button.textContent); // Anexa o número clicado ao valor atual
     }
-    display();
+    display();                          // Atualiza a exibição
   })
 })
 
+// Event listener para os botões de operação (+, -, *, /, etc.)
 operationButtons.forEach(button => {
   button.addEventListener('click', () => {
-    operations(button.textContent)
-    display()
+    operations(button.textContent)    // Lida com operações matemáticas
+    display();                        // Atualiza a exibição
   })
 })
 
+// Event listener para o botão "C" (limpar)
 clearButton.addEventListener('click', () => {
-  clear()
-  display()
+  clear();                            // Limpa o estado da calculadora
+  display();                          // Atualiza a exibição
 });
 
+// Event listener para o botão "DEL" (apagar)
 deleteButton.addEventListener("click", () => {
-  deleteNum();
+  deleteNum();                        // Lida com a funcionalidade de apagar
 })
 
+// Event listener para o botão "=" (igual)
 equalButtons.addEventListener('click', () => {
   if (operation && currentValueElements) {
     const expression = `${previousValueWlements}${currentValueElements}`;
-    const result = compute(expression);
+    const result = compute(expression);  // Calcula o resultado da expressão
     currentValueElements = result.toString();
     previousValueWlements = '';
     operation = undefined;
-    display();
+    display();                          // Atualiza a exibição com o resultado
     equalButton_ = true;
   }
 });
 
+// Função para anexar um número ao valor atual
 function appendNumber(num) {
-
-  if(num === '.' && currentValueElements.includes('.')) return
+  if (num === '.' && currentValueElements.includes('.')) return; // Evita múltiplos pontos decimais
   currentValueElements += num.toString();
 }
 
+// Função para atualizar a exibição com os valores atuais
 function display() {
   currentVal.innerText = currentValueElements;
-  console.log(currentValueElements);
-  console.log(previousValueWlements);
   operation !== undefined
-  ? previousVal.innerText = `${previousValueWlements}`
-  : previousVal.innerText = ''
-  
+    ? previousVal.innerText = `${previousValueWlements}`
+    : previousVal.innerText = ''
 }
+
+// Função para limpar o estado da calculadora
 function clear() {
   currentValueElements = '';
   previousValueWlements = '';
   operation = undefined;
 }
-function operations (oper) {
-  if(currentValueElements === '') return
+
+// Função para lidar com operações matemáticas
+function operations(oper) {
+  if (currentValueElements === '') return;
   operation = oper;
-  previousValueWlements += `${currentValueElements} ${oper} `
-  currentValueElements = ''
+  previousValueWlements += `${currentValueElements} ${oper} `;
+  currentValueElements = '';
 }
 
+// Função para apagar o último caractere do valor atual
 function deleteNum() {
   currentValueElements = currentVal.textContent.slice(0, -1);
   currentVal.innerText = currentValueElements;
 }
 
+// Função para calcular o resultado de uma expressão matemática
 function compute(expression) {
+  // Inicializa pilhas para lidar com operadores e operandos
   const operators = [];
   const operands = [];
 
+  // Define a precedência dos operadores
   const precedence = {
     '+': 1,
     '-': 1,
@@ -95,6 +108,7 @@ function compute(expression) {
     '/': 2
   };
 
+  // Função para aplicar um operador a dois operandos
   function applyOperator() {
     const operator = operators.pop();
     const rightOperand = operands.pop();
